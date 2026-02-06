@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 
 	"github.com/rinkachi/golang-demos/golang-generics-demo/pkg/maps"
 	"github.com/rinkachi/golang-demos/golang-generics-demo/pkg/ptr"

@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"time"
 
+	"go.flipt.io/flipt/rpc/flipt/evaluation"
 	sdk "go.flipt.io/flipt/sdk/go"
-	"go.flipt.io/flipt/sdk/go/evaluation"
 	sdkgrpc "go.flipt.io/flipt/sdk/go/grpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -33,7 +33,7 @@ func main() {
 		enabled, err := checkFlag(ctx, fliptClient, "new-ui-enabled", map[string]string{
 			"userId": "user-123", // Context for segmentation
 		})
-		
+
 		if err != nil {
 			log.Printf("Flag check error: %v", err)
 			// Fallback behavior

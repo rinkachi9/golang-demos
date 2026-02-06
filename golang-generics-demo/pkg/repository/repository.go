@@ -39,7 +39,7 @@ func NewInMemoryRepository[T Entity[ID], ID comparable]() *InMemoryRepository[T,
 func (r *InMemoryRepository[T, ID]) Create(ctx context.Context, entity T) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	
+
 	id := entity.GetID()
 	if _, exists := r.data[id]; exists {
 		return fmt.Errorf("entity with ID %v already exists", id)
@@ -51,7 +51,7 @@ func (r *InMemoryRepository[T, ID]) Create(ctx context.Context, entity T) error 
 func (r *InMemoryRepository[T, ID]) FindByID(ctx context.Context, id ID) (T, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
-	
+
 	entity, ok := r.data[id]
 	if !ok {
 		var zero T
@@ -63,18 +63,18 @@ func (r *InMemoryRepository[T, ID]) FindByID(ctx context.Context, id ID) (T, err
 func (r *InMemoryRepository[T, ID]) FindAll(ctx context.Context) ([]T, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
-	
+
 	result := make([]T, 0, len(r.data))
 	for _, item := range r.data {
 		result = append(result, item)
 	}
-	return result
+	return result, nil
 }
 
 func (r *InMemoryRepository[T, ID]) Update(ctx context.Context, entity T) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	
+
 	id := entity.GetID()
 	if _, exists := r.data[id]; !exists {
 		return ErrNotFound
@@ -86,7 +86,7 @@ func (r *InMemoryRepository[T, ID]) Update(ctx context.Context, entity T) error 
 func (r *InMemoryRepository[T, ID]) Delete(ctx context.Context, id ID) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	
+
 	if _, exists := r.data[id]; !exists {
 		return ErrNotFound
 	}

@@ -10,7 +10,7 @@ import (
 
 	"github.com/segmentio/kafka-go"
 	"google.golang.org/grpc"
-	
+
 	// In a real scenario, we would generate the pb code.
 	// Since I cannot run protoc here effectively without the toolchain installed on the machine,
 	// I will simulate the interface or structure it such that it compiles if generated.
@@ -41,7 +41,7 @@ func (s *server) PublishStream(stream pb.StreamService_PublishStreamServer) erro
 
 		// Process logic: Validate and Publish to Kafka
 		msgValue := fmt.Sprintf(`{"source": "%s", "value": %f, "ts": %d}`, point.SourceId, point.Value, point.Timestamp)
-		
+
 		msg := kafka.Message{
 			Key:   []byte(point.SourceId),
 			Value: []byte(msgValue),
@@ -59,8 +59,10 @@ func (s *server) PublishStream(stream pb.StreamService_PublishStreamServer) erro
 			summary.TotalValue += point.Value
 		}
 	}
-	
+
 	_ = startTime // usage
+
+	return nil
 }
 
 func main() {
@@ -79,7 +81,7 @@ func main() {
 
 	s := grpc.NewServer()
 	pb.RegisterStreamServiceServer(s, &server{kafkaWriter: writer})
-	
+
 	log.Printf("gRPC server listening on :50051")
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
