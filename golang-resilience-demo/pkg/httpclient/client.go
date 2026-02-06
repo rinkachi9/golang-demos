@@ -83,8 +83,8 @@ func (c *ResilientClient) getWithRetry(ctx context.Context, url string) ([]byte,
 		}
 
 		// Calculate backoff: base * 2^i + jitter
-		backoff := float64(baseDelay) * float64(1<<i)
-		jitter := (rand.Float64() * 0.5 + 0.5) * backoff // 0.5-1.0 * backoff
+		backoff := baseDelay * time.Duration(1<<i)
+		jitter := (rand.Float64()*0.5 + 0.5) * float64(backoff) // 0.5-1.0 * backoff
 		sleepDuration := time.Duration(jitter)
 
 		fmt.Printf("Request failed (%v). Retrying in %v...\n", err, sleepDuration)
