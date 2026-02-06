@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package river;
+
+option go_package = "github.com/rinkachi/golang-demos/golang-grpc-kafka-demo/pkg/api/v1;api";
+
+// StreamService defines the gRPC streaming service
+service StreamService {
+  // PublishStream accepts a stream of data points and publishes them
+  rpc PublishStream(stream DataPoint) returns (PublishSummary) {}
+}
+
+message DataPoint {
+  string source_id = 1;
+  double value = 2;
+  int64 timestamp = 3;
+}
+
+message PublishSummary {
+  int32 processed_count = 1;
+  int32 failed_count = 2;
+  double total_value = 3;
+}

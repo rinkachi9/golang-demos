@@ -1,0 +1,5 @@
+server:
+  port: 8084
+  message: "Original Config"
+features:
+  beta: false
