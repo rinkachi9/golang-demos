@@ -7,7 +7,9 @@ import (
 	"net/http"
 	"time"
 
-	"go.flipt.io/flipt/rpc/go/client"
+	sdk "go.flipt.io/flipt/sdk/go"
+	"go.flipt.io/flipt/sdk/go/evaluation"
+	sdkgrpc "go.flipt.io/flipt/sdk/go/grpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -20,7 +22,7 @@ func main() {
 	}
 	defer conn.Close()
 
-	fliptClient := client.New(conn)
+	fliptClient := sdk.New(sdkgrpc.NewTransport(conn))
 
 	// Simple HTTP server using flags
 	http.HandleFunc("/feature", func(w http.ResponseWriter, r *http.Request) {
@@ -50,8 +52,8 @@ func main() {
 	http.ListenAndServe(":8083", nil)
 }
 
-func checkFlag(ctx context.Context, c client.Client, flagKey string, context map[string]string) (bool, error) {
-	resp, err := c.Evaluation().Boolean(ctx, &client.EvaluationRequest{
+func checkFlag(ctx context.Context, c sdk.SDK, flagKey string, context map[string]string) (bool, error) {
+	resp, err := c.Evaluation().Boolean(ctx, &evaluation.EvaluationRequest{
 		NamespaceKey: "default",
 		FlagKey:      flagKey,
 		EntityId:     context["userId"], // Often used as EntityId

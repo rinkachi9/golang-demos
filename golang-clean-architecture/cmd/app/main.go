@@ -8,15 +8,14 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/gin-gonic/gin"
 	"github.com/ThreeDotsLabs/watermill"
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/ThreeDotsLabs/watermill/pubsub/gochannel"
+	"github.com/gin-gonic/gin"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
 	"github.com/rinkachi/golang-demos/golang-clean-architecture/application"
-	"github.com/rinkachi/golang-demos/golang-clean-architecture/domain"
 	httphandler "github.com/rinkachi/golang-demos/golang-clean-architecture/infrastructure/http"
 	"github.com/rinkachi/golang-demos/golang-clean-architecture/infrastructure/messaging"
 	"github.com/rinkachi/golang-demos/golang-clean-architecture/infrastructure/persistence"
@@ -42,7 +41,7 @@ func main() {
 	var db *gorm.DB
 	var err error
 	dsn := "host=localhost user=user password=password dbname=clean_arch port=5432 sslmode=disable"
-	
+
 	for i := 0; i < 10; i++ {
 		db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 		if err == nil {
@@ -88,10 +87,10 @@ func main() {
 	// 6. Server
 	address := ":8080"
 	logger.Printf("Starting server on %s", address)
-	
+
 	// Graceful shutdown
-	srv := &gin.Engine{} // wrapper not needed for Run, but for custom server
-	
+	_ = &gin.Engine{} // wrapper not needed for Run, but for custom server
+
 	go func() {
 		if err := ginRouter.Run(address); err != nil {
 			logger.Printf("Server stopped: %v", err)
@@ -106,7 +105,7 @@ func main() {
 	logger.Println("Shutting down...")
 	cancel() // Stop Watermill router
 	// (Add http server shutdown here if using http.Server struct)
-	
+
 	time.Sleep(1 * time.Second) // Give workers time to finish
 	logger.Println("Exited.")
 }

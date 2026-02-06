@@ -1,10 +1,9 @@
 package messaging
 
 import (
-	"context"
 	"encoding/json"
 	"log"
-	
+
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/rinkachi/golang-demos/golang-clean-architecture/domain"
 )
@@ -26,10 +25,10 @@ func (w *ShippingWorker) HandleOrderPaid(msg *message.Message) error {
 	}
 
 	w.logger.Printf("[SHIPPING] Processing shipment for Order %s. Amount paid: %.2f", event.OrderID, event.TotalAmount)
-	
+
 	// Simulate shipping processing
-	// ... 
-	
+	// ...
+
 	return nil
 }
 
