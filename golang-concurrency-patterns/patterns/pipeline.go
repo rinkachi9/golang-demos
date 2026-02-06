@@ -9,34 +9,13 @@ import (
 // PipelineStage defines a step in the pipeline.
 type PipelineStage[T any] func(context.Context, <-chan T) <-chan T
 
-// ... (Generator and Filter are handled in previous block, keeping context valid for Map)
-
-// Map applies a function to all items in the channel.
-func Map[T any, R any](ctx context.Context, in <-chan T, transform func(T) R) <-chan R {
-	outStr := make(chan R)
+// Generator emits provided items into a channel.
+func Generator[T any](ctx context.Context, items ...T) <-chan T {
+	outCh := make(chan T)
 	tracer := otel.Tracer("pipeline")
 
 	go func() {
-		defer close(outStr)
-		_, span := tracer.Start(ctx, "map")
-		defer span.End()
-
-		for item := range in {
-			mapped := transform(item)
-			select {
-			case <-ctx.Done():
-				return
-			case outStr <- mapped:
-			}
-		}
-	}()
-	return outStr
-}
-	outStr := make(chan T)
-	tracer := otel.Tracer("pipeline")
-
-	go func() {
-		defer close(outStr)
+		defer close(outCh)
 		_, span := tracer.Start(ctx, "generator")
 		defer span.End()
 
@@ -44,20 +23,21 @@ func Map[T any, R any](ctx context.Context, in <-chan T, transform func(T) R) <-
 			select {
 			case <-ctx.Done():
 				return
-			case outStr <- item:
+			case outCh <- item:
 			}
 		}
 	}()
-	return outStr
+
+	return outCh
 }
 
 // Filter returns a new channel with items that satisfy the predicate.
 func Filter[T any](ctx context.Context, in <-chan T, predicate func(T) bool) <-chan T {
-	outStr := make(chan T)
+	outCh := make(chan T)
 	tracer := otel.Tracer("pipeline")
 
 	go func() {
-		defer close(outStr)
+		defer close(outCh)
 		_, span := tracer.Start(ctx, "filter")
 		defer span.End()
 
@@ -68,26 +48,33 @@ func Filter[T any](ctx context.Context, in <-chan T, predicate func(T) bool) <-c
 			select {
 			case <-ctx.Done():
 				return
-			case outStr <- item:
+			case outCh <- item:
 			}
 		}
 	}()
-	return outStr
+
+	return outCh
 }
 
 // Map applies a function to all items in the channel.
 func Map[T any, R any](ctx context.Context, in <-chan T, transform func(T) R) <-chan R {
-	outStr := make(chan R)
+	outCh := make(chan R)
+	tracer := otel.Tracer("pipeline")
+
 	go func() {
-		defer close(outStr)
+		defer close(outCh)
+		_, span := tracer.Start(ctx, "map")
+		defer span.End()
+
 		for item := range in {
 			mapped := transform(item)
 			select {
 			case <-ctx.Done():
 				return
-			case outStr <- mapped:
+			case outCh <- mapped:
 			}
 		}
 	}()
-	return outStr
+
+	return outCh
 }

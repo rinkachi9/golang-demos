@@ -14,6 +14,7 @@ import (
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.21.0"
+	"go.opentelemetry.io/otel/trace"
 )
 
 func initTracer() func(context.Context) error {
@@ -89,7 +90,7 @@ func main() {
 			})
 
 			// Simulate Heavy Computation (Resize)
-			_, resizeSpan := tracer.Start(ctx, "process_image_resize",  sdktrace.WithAttributes(attribute.Int("image.id", id)))
+			_, resizeSpan := tracer.Start(ctx, "process_image_resize", trace.WithAttributes(attribute.Int("image.id", id)))
 			time.Sleep(200 * time.Millisecond)
 			resizeSpan.End()
 
@@ -100,7 +101,7 @@ func main() {
 			if err := uploader.Wait(ctx); err != nil {
 				return "", err
 			}
-			
+
 			// Simulate Upload
 			_, upSpan := tracer.Start(ctx, "upload_image")
 			time.Sleep(50 * time.Millisecond)

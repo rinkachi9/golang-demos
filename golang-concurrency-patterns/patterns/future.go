@@ -2,15 +2,14 @@ package patterns
 
 import (
 	"context"
-	"sync"
 
 	"go.opentelemetry.io/otel"
 )
 
 // Future represents a value that will be available in the future.
 type Future[T any] struct {
-	val T
-	err error
+	val  T
+	err  error
 	done chan struct{}
 }
 
@@ -35,7 +34,7 @@ func Async[T any](ctx context.Context, f func(context.Context) (T, error)) *Futu
 
 	go func() {
 		defer close(fut.done)
-		
+
 		// Start span for async task
 		subCtx, span := tracer.Start(ctx, "async_future")
 		defer span.End()

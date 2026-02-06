@@ -1,7 +1,9 @@
 module github.com/rinkachi/golang-demos/golang-ebpf-monitoring
 
-go 1.22
+go 1.24.0
 
-require (
-    github.com/cilium/ebpf v0.12.3
-)
+toolchain go1.24.11
+
+require github.com/cilium/ebpf v0.20.0
+
+require golang.org/x/sys v0.37.0 // indirect
