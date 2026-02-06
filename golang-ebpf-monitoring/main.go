@@ -12,9 +12,6 @@ import (
 	"github.com/cilium/ebpf/rlimit"
 )
 
-// To generate the Go bindings:
-// $ go run github.com/cilium/ebpf/cmd/bpf2go -target native Counter bpf/counter.c
-
 func main() {
 	// Remove resource limits for kernels < 5.11
 	if err := rlimit.RemoveMemlock(); err != nil {
