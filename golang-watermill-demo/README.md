@@ -1,25 +1,25 @@
 # golang-watermill-demo
 
-Clean-architecture demo Watermill z dwiema usługami:
+Clean‑architecture Watermill demo with two services:
 
-- `api`: Gin HTTP + WebSocket + publikacja do Kafka/Rabbit
-- `worker`: konsumuje Kafka/Rabbit, enrichuje dane, publikuje do Kafka i Rabbit
+- `api`: Gin HTTP + WebSocket + publishes to Kafka and RabbitMQ
+- `worker`: consumes Kafka/Rabbit, enriches data, publishes to Kafka and Rabbit
 
-## Szybki start
+## Quick Start
 
-1. Infrastruktura:
+1. Infrastructure:
 ```bash
 docker compose up -d kafka zookeeper rabbitmq jaeger
 ```
 
-2. Start usług:
+2. Run services:
 ```bash
 cd golang-watermill-demo
 go run ./cmd/api
 go run ./cmd/worker
 ```
 
-3. Opublikuj zdarzenie:
+3. Publish an event:
 ```bash
 curl -X POST http://localhost:8085/api/order \
   -H 'Content-Type: application/json' \
@@ -32,34 +32,34 @@ curl -X POST http://localhost:8085/api/order \
 websocat ws://localhost:8085/ws
 ```
 
-## Endpointy
+## Endpoints
 
-- `POST /api/order` - publikuje zdarzenie do Kafki i Rabbit
+- `POST /api/order` - publishes to Kafka and RabbitMQ
 - `GET /ws` - WebSocket realtime updates
 - `GET /healthz` - healthcheck
 
-## Konfiguracja (ENV)
+## Configuration (ENV)
 
-Wspólne:
-- `KAFKA_BROKERS` (domyślnie `localhost:9092`)
-- `RABBIT_URL` (domyślnie `amqp://guest:guest@localhost:5672/`)
-- `OTEL_EXPORTER_OTLP_ENDPOINT` (domyślnie `localhost:4317`)
-- `SERVICE_VERSION` (domyślnie `0.1.0`)
+Shared:
+- `KAFKA_BROKERS` (default `localhost:9092`)
+- `RABBIT_URL` (default `amqp://guest:guest@localhost:5672/`)
+- `OTEL_EXPORTER_OTLP_ENDPOINT` (default `localhost:4317`)
+- `SERVICE_VERSION` (default `0.1.0`)
 
 API:
-- `SERVICE_NAME` (domyślnie `watermill-api`)
-- `HTTP_ADDR` (domyślnie `:8085`)
-- `METRICS_ADDR` (domyślnie `:9109`)
+- `SERVICE_NAME` (default `watermill-api`)
+- `HTTP_ADDR` (default `:8085`)
+- `METRICS_ADDR` (default `:9109`)
 
 Worker:
-- `SERVICE_NAME` (domyślnie `watermill-worker`)
-- `METRICS_ADDR` (domyślnie `:9110`)
+- `SERVICE_NAME` (default `watermill-worker`)
+- `METRICS_ADDR` (default `:9110`)
 
-## RabbitMQ Dead-Letter
+## RabbitMQ Dead‑Letter
 
-Worker ustawia DLX:
+Worker configures DLX:
 - exchange: `watermill.dlx`
 - queue: `watermill.dead_letter`
 - routing key: `dead-letter`
 
-Wiadomości z handlerów po wyczerpaniu retry trafiają do DLQ.
+Messages that exhaust retries are routed to the DLQ.

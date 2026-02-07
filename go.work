@@ -10,6 +10,7 @@ use (
 	./golang-feature-toggle-poc
 	./golang-generics-demo
 	./golang-grpc-kafka-demo
+	./golang-gorm-advanced
 	./golang-otel-demo
 	./golang-resilience-demo
 	./golang-watermill-demo
