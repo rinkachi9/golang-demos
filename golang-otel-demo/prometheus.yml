@@ -5,3 +5,9 @@ scrape_configs:
   - job_name: 'otel-demo'
     static_configs:
       - targets: ['host.docker.internal:8081'] # Assumes app runs on host port 8081
+  - job_name: 'watermill-api'
+    static_configs:
+      - targets: ['host.docker.internal:9109']
+  - job_name: 'watermill-worker'
+    static_configs:
+      - targets: ['host.docker.internal:9110']

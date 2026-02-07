@@ -12,4 +12,5 @@ use (
 	./golang-grpc-kafka-demo
 	./golang-otel-demo
 	./golang-resilience-demo
+	./golang-watermill-demo
 )

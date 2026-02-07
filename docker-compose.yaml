@@ -1,10 +1,6 @@
-version: '3.9'
-
 services:
-  # --- Persistence ---
   postgres:
     image: postgres:15-alpine
-    profiles: [clean-arch, otel-demo, infra]
     environment:
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=password
@@ -14,10 +10,8 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-  # --- Messaging ---
   zookeeper:
     image: confluentinc/cp-zookeeper:7.5.0
-    profiles: [kafka, otel-demo, infra]
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
@@ -26,7 +20,6 @@ services:
 
   kafka:
     image: confluentinc/cp-kafka:7.5.0
-    profiles: [kafka, otel-demo, infra]
     depends_on:
       - zookeeper
     ports:
@@ -39,10 +32,17 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
-  # --- Observability ---
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
   jaeger:
     image: jaegertracing/all-in-one:1.50
-    profiles: [observability, otel-demo, infra]
     environment:
       - COLLECTOR_OTLP_ENABLED=true
     ports:
@@ -52,7 +52,7 @@ services:
 
   prometheus:
     image: prom/prometheus:v2.47.2
-    profiles: [observability, otel-demo, infra]
+    profiles: [ observability, otel-demo, infra ]
     command:
       - --config.file=/etc/prometheus/prometheus.yml
       - --enable-feature=otlp-write-receiver
@@ -63,21 +63,15 @@ services:
 
   grafana:
     image: grafana/grafana:10.1.5
-    profiles: [observability, otel-demo, infra]
     ports:
       - "3000:3000"
     environment:
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
 
-  # --- OTEL Demo App (Optional, if we want to run it via compose) ---
-  # Ignoring app build as requested, only deps.
-
-  # --- Feature Flags ---
   flipt:
     image: flipt/flipt:latest
-    profiles: [toggles, infra]
-    command: ["./flipt"]
+    command: [ "./flipt" ]
     ports:
       - "8080:8080"
       - "9000:9000"
